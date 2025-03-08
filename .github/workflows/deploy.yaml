@@ -41,6 +41,19 @@ jobs:
       run: |
         kubectl apply -f namespace.yaml
 
+    - name: Substitute Variables in YAML Files
+      run: |
+        for file in $(find . -name '*.yaml'); do
+          echo "Processing $file"
+          sed -i "s/{{tudominio}}/${{ secrets.DOMAIN }}/g" $file
+          sed -i "s/{{email}}/${{ secrets.CERT_MANAGER_EMAIL }}/g" $file
+          sed -i "s/{{grafana_admin_password}}/${{ secrets.GRAFANA_ADMIN_PASSWORD }}/g" $file
+          sed -i "s/{{prometheus_version}}/${{ env.prometheus_version }}/g" $file
+          sed -i "s/{{grafana_version}}/${{ env.grafana_version }}/g" $file
+          sed -i "s/{{loki_version}}/${{ env.loki_version }}/g" $file
+          sed -i "s/{{loki_domain}}/${{ env.loki_domain }}/g" $file
+        done
+
     - name: Deploy Prometheus
       run: |
         kubectl apply -f prometheus.yaml
