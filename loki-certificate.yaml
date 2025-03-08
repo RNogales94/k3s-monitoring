@@ -2,7 +2,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: loki-tls
-  namespace: monitoring
+  namespace: {{ NAMESPACE }}
 spec:
   secretName: loki-tls
   issuerRef:

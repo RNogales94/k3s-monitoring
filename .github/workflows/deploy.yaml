@@ -37,16 +37,17 @@ jobs:
         mkdir -p $HOME/.kube
         echo "$KUBE_CONFIG_DATA" | base64 -d > $HOME/.kube/config
     
-    - name: Substitute Variables in YAML Files
+    - name: Substitute and Apply Namespace
       run: |
-        for file in $(find . -name '*.yaml'); do
+        echo "Processing namespace.yaml"
+        envsubst < namespace.yaml | kubectl apply -f -
+      
+    - name: Substitute Variables and Apply All Other YAML Files
+      run: |
+        for file in $(find . -name '*.yaml' ! -name 'namespace.yaml'); do
         echo "Processing $file"
         envsubst < $file | kubectl apply -f -
         done
-        
-    - name: Create Namespace
-      run: |
-        kubectl apply -f namespace.yaml
     
     - name: Deploy Prometheus
       run: |
