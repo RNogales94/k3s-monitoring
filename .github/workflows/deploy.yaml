@@ -42,12 +42,22 @@ jobs:
         echo "Processing namespace.yaml"
         envsubst < namespace.yaml | kubectl apply -f -
       
-    - name: Substitute Variables and Apply All Other YAML Files
+    - name: Substitute Variables and Apply YAML Files
       run: |
-        for file in $(find . -name '*.yaml' ! -name 'namespace.yaml'); do
+        for file in $(find . -name '*.yaml'); do
         echo "Processing $file"
-        envsubst < $file | kubectl apply -f -
+        cat $file | yq e '. | to_entries | map(select(.value | tag == "!!str")) | from_entries' - \
+        | sed -E "s/\{\{\s*NAMESPACE\s*\}\}/$NAMESPACE/g" \
+        | sed -E "s/\{\{\s*prometheus_version\s*\}\}/$prometheus_version/g" \
+        | sed -E "s/\{\{\s*grafana_version\s*\}\}/$grafana_version/g" \
+        | sed -E "s/\{\{\s*grafana_admin_password\s*\}\}/$grafana_admin_password/g" \
+        | sed -E "s/\{\{\s*tudominio\s*\}\}/$tudominio/g" \
+        | sed -E "s/\{\{\s*email\s*\}\}/$email/g" \
+        | sed -E "s/\{\{\s*loki_version\s*\}\}/$loki_version/g" \
+        | sed -E "s/\{\{\s*loki_domain\s*\}\}/$loki_domain/g" \
+        | kubectl apply -f -
         done
+          
     
     - name: Deploy Prometheus
       run: |

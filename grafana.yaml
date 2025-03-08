@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
-  namespace: {{ NAMESPACE }}
+  namespace: $NAMESPACE
 spec:
   replicas: 1
   selector:
@@ -15,14 +15,14 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: grafana/grafana:{{ grafana_version }}
+        image: grafana/grafana:$grafana_version
         ports:
         - containerPort: 3000
         env:
         - name: GF_SECURITY_ADMIN_USER
           value: "admin"
         - name: GF_SECURITY_ADMIN_PASSWORD
-          value: "{{ grafana_admin_password }}"
+          value: $grafana_admin_password
         volumeMounts:
         - name: grafana-datasources
           mountPath: /etc/grafana/provisioning/datasources/

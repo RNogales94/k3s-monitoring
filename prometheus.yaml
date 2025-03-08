@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
-  namespace: {{ NAMESPACE }}
+  namespace: $NAMESPACE
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: prometheus
-        image: prom/prometheus:{{ prometheus_version }}
+        image: prom/prometheus:$prometheus_version
         ports:
         - containerPort: 9090
         volumeMounts:
