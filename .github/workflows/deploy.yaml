@@ -1,0 +1,93 @@
+name: Deploy Monitoring Stack to Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
+  NAMESPACE: monitoring
+  prometheus_version: "v2.41.0"
+  grafana_version: "10.3.3"
+  grafana_admin_password: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+  tudominio: ${{ secrets.DOMAIN }}
+  email: ${{ secrets.CERT_MANAGER_EMAIL }}
+  loki_version: "2.9.3"
+  loki_domain: "loki.${{ secrets.DOMAIN }}"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up kubectl
+      run: |
+        curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -L -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+        chmod +x ./kubectl
+        sudo mv ./kubectl /usr/local/bin/kubectl
+
+    - name: Set up Kubeconfig
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG }}
+      run: |
+        mkdir -p $HOME/.kube
+        echo "$KUBE_CONFIG_DATA" | base64 -d > $HOME/.kube/config
+
+    - name: Create Namespace
+      run: |
+        kubectl apply -f namespace.yaml
+
+    - name: Deploy Prometheus
+      run: |
+        kubectl apply -f prometheus.yaml
+        kubectl apply -f prometheus-config.yaml
+
+    - name: Deploy Grafana
+      run: |
+        kubectl apply -f grafana.yaml
+        kubectl apply -f grafana-datasource.yaml
+        kubectl apply -f grafana-ingress.yaml
+
+    - name: Deploy Loki
+      run: |
+        kubectl apply -f loki.yaml
+        kubectl apply -f promtail.yaml
+        kubectl apply -f loki-service.yaml
+        kubectl apply -f loki-ingress.yaml
+        kubectl apply -f loki-certificate.yaml
+        kubectl apply -f grafana-loki-datasource.yaml
+
+    - name: Setup TLS with Cert-Manager
+      run: |
+        kubectl apply -f letsencrypt-clusterissuer.yaml
+        kubectl apply -f grafana-certificate.yaml
+
+    - name: Check Deployment Status
+      run: |
+        kubectl get pods -n $NAMESPACE
+        kubectl get services -n $NAMESPACE
+        kubectl get ingress -n $NAMESPACE
+
+    - name: Verify Grafana Access
+      run: |
+        kubectl get ingress grafana-ingress -n $NAMESPACE
+        kubectl describe certificate grafana-certificate -n $NAMESPACE
+
+    - name: Verify Loki Access
+      run: |
+        kubectl get ingress loki-ingress -n $NAMESPACE
+        kubectl describe certificate loki-certificate -n $NAMESPACE
+
+    - name: Validate Connections
+      run: |
+        kubectl port-forward -n $NAMESPACE svc/grafana 3000:80 &
+        sleep 10
+        curl -v http://localhost:3000/api/health
+
+    - name: Cleanup Port-Forward
+      run: |
+        pkill -f "kubectl port-forward" || true
