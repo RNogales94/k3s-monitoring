@@ -48,7 +48,7 @@ jobs:
     - name: Substitute and Apply Namespace
       run: |
         echo "Processing namespace.yaml"
-        envsubst < namespace.yaml | kubectl apply -f -
+        envsubst < namespace.yaml | kubectl apply -n ${NAMESPACE} -f -
       
     - name: Substitute Variables and Apply YAML Files
       run: |
