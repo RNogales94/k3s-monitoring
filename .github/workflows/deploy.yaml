@@ -36,6 +36,14 @@ jobs:
       run: |
         mkdir -p $HOME/.kube
         echo "$KUBE_CONFIG_DATA" | base64 -d > $HOME/.kube/config
+
+    - name: Debug All YAML Files
+      run: |
+        for file in $(find . -name '*.yaml'); do
+        echo "Processing $file"
+        envsubst < "$file" | cat
+        done
+    
     
     - name: Substitute and Apply Namespace
       run: |
