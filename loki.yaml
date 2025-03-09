@@ -59,6 +59,8 @@ spec:
       initContainers:
         - name: init-loki-permissions
           image: busybox
+          securityContext:
+            privileged: true
           command:
             - sh
             - -c
