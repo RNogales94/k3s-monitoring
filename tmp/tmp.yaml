@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug-pod
+  namespace: monitoring
+spec:
+  containers:
+  - name: debug-container
+    image: busybox
+    command: ["sleep", "3600"]
+    volumeMounts:
+    - name: loki-data
+      mountPath: /data
+  volumes:
+  - name: loki-data
+    persistentVolumeClaim:
+      claimName: loki-pvc
+  restartPolicy: Never
+
