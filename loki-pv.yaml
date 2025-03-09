@@ -11,3 +11,4 @@ spec:
   storageClassName: local-path
   hostPath:
     path: /var/lib/loki-data
+    type: DirectoryOrCreate
