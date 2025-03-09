@@ -13,7 +13,6 @@ env:
   grafana_admin_password: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
   email: ${{ secrets.CERT_MANAGER_EMAIL }}
   loki_version: "2.9.3"
-  loki_domain: "loki.${{ secrets.DOMAIN }}"
   grafana_domain: "grafana.${{ secrets.DOMAIN }}"
 
 jobs:
@@ -83,13 +82,11 @@ jobs:
         kubectl apply -f loki.yaml
         kubectl apply -f promtail.yaml
         kubectl apply -f loki-service.yaml
-        kubectl apply -f loki-ingress.yaml
         kubectl apply -f grafana-loki-datasource.yaml
 
     - name: Setup TLS with Cert-Manager
       run: |
         kubectl apply -f letsencrypt-clusterissuer.yaml
-        kubectl apply -f loki-certificate.yaml
         kubectl apply -f grafana-certificate.yaml
 
     - name: Check Deployment Status
