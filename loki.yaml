@@ -23,10 +23,10 @@ spec:
             - name: loki-data
               mountPath: /data
             - name: loki-config
-              mountPath: /etc/loki/loki.yaml
+              mountPath: /config/loki.yaml
               subPath: loki.yaml
           args:
-            - -config.file=/etc/loki/loki.yaml
+            - -config.file=/config/loki.yaml
           resources:
             requests:
               memory: "256Mi"
@@ -42,9 +42,10 @@ spec:
             httpGet:
               path: /ready
               port: 3100
+      volumeMounts:
+        - name: loki-data
+          mountPath: /data
       volumes:
         - name: loki-data
-          emptyDir: {}
-        - name: loki-config
-          configMap:
-            name: loki-config
+          persistentVolumeClaim:
+            claimName: loki-pvc
