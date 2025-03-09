@@ -100,11 +100,6 @@ jobs:
         kubectl get ingress grafana-ingress -n $NAMESPACE
         kubectl describe certificate grafana-certificate -n $NAMESPACE
 
-    - name: Verify Loki Access
-      run: |
-        kubectl get ingress loki-ingress -n $NAMESPACE
-        kubectl describe certificate loki-certificate -n $NAMESPACE
-
     - name: Validate Connections
       run: |
         kubectl port-forward -n $NAMESPACE svc/grafana 3000:80 &
