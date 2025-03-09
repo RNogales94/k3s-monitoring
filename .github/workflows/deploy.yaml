@@ -84,12 +84,12 @@ jobs:
         kubectl apply -f promtail.yaml
         kubectl apply -f loki-service.yaml
         kubectl apply -f loki-ingress.yaml
-        kubectl apply -f loki-certificate.yaml
         kubectl apply -f grafana-loki-datasource.yaml
 
     - name: Setup TLS with Cert-Manager
       run: |
         kubectl apply -f letsencrypt-clusterissuer.yaml
+        kubectl apply -f loki-certificate.yaml
         kubectl apply -f grafana-certificate.yaml
 
     - name: Check Deployment Status
