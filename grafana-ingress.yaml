@@ -7,6 +7,7 @@ metadata:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-production
 spec:
+  ingressClassName: traefik
   rules:
   - host: $grafana_domain
     http:
