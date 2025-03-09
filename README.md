@@ -31,7 +31,8 @@ This repository provides a fully automated setup to deploy a robust monitoring a
   - `KUBE_CONFIG`: Base64-encoded kubeconfig file
   - `GRAFANA_ADMIN_PASSWORD`: Password for Grafana admin user
   - `CERT_MANAGER_EMAIL`: Email for Let's Encrypt notifications
-  - `DOMAIN`: Domain where Grafana and Loki will be accessible
+  - `DOMAIN`: Domain where Grafana will be accessible as a subdomain (grafana.DOMAIN)
+
 
 ---
 
