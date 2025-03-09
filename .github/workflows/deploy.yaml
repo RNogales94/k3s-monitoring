@@ -74,6 +74,8 @@ jobs:
     
     - name: Deploy Prometheus
       run: |
+        cat prometheus.yaml
+        cat prometheus-config.yaml
         kubectl apply -f prometheus.yaml
         kubectl apply -f prometheus-config.yaml
 
