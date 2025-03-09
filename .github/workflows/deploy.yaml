@@ -80,6 +80,7 @@ jobs:
     - name: Deploy Loki
       run: |
         kubectl apply -f loki.yaml
+        kubectl apply -f loki-config.yaml
         kubectl apply -f promtail.yaml
         kubectl apply -f loki-service.yaml
         kubectl apply -f grafana-loki-datasource.yaml
