@@ -53,3 +53,18 @@ spec:
         runAsUser: 10001
         runAsGroup: 10001
         fsGroup: 10001
+        
+      initContainers:
+      - name: init-loki-permissions
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            mkdir -p /data/loki/index /data/loki/cache /data/loki/chunks &&
+            chown -R 10001:10001 /data &&
+            chmod -R 775 /data &&
+            ls -l /data/loki
+        volumeMounts:
+        - name: loki-data
+          mountPath: /data
