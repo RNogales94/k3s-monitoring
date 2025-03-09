@@ -69,11 +69,13 @@ jobs:
         cat prometheus-config.yaml
         kubectl apply -f prometheus.yaml
         kubectl apply -f prometheus-config.yaml
+        kubectl apply -f prometheus-service.yaml
 
     - name: Deploy Grafana
       run: |
         kubectl apply -f grafana.yaml
         kubectl apply -f grafana-datasource.yaml
+        kubectl apply -f grafana-service.yaml
         kubectl apply -f grafana-ingress.yaml
 
     - name: Deploy Loki
