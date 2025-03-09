@@ -22,6 +22,9 @@ spec:
           volumeMounts:
             - name: loki-data
               mountPath: /data
+            - name: loki-config
+              mountPath: /etc/loki/loki.yaml
+              subPath: loki.yaml
           args:
             - -config.file=/etc/loki/loki.yaml
           resources:
@@ -42,3 +45,6 @@ spec:
       volumes:
         - name: loki-data
           emptyDir: {}
+        - name: loki-config
+          configMap:
+            name: loki-config
